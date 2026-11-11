@@ -60,7 +60,7 @@ def main():
         duration = float(item.get('duration', 4))
         if not 1 <= duration <= 15: raise ValueError(f'images[{i}].duration must be 1..15 seconds')
         img = asset_path(item.get('url') or item.get('path'), f'image_{i}')
-        inputs += ['-loop','1','-framerate',str(FPS),'-t',str(duration),'-i',str(img)]
+        inputs += ['-loop','1','-framerate','1','-t','1','-i',str(img)]
         frames = round(duration * FPS); label = f'v{i}'
         filters.append(f'[{i}:v]scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,crop={WIDTH}:{HEIGHT},zoompan=z=\'min(zoom+0.0007,1.10)\':x=\'iw/2-(iw/zoom/2)\':y=\'ih/2-(ih/zoom/2)\':d={frames}:s={WIDTH}x{HEIGHT}:fps={FPS},setsar=1,format=yuv420p[{label}]')
         labels.append(f'[{label}]'); duration_total += duration
