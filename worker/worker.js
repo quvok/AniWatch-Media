@@ -4,7 +4,7 @@ const json = (data, status = 200, origin = "") => new Response(JSON.stringify(da
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization"
   }
 });
@@ -72,36 +72,6 @@ async function authorized(request, env) {
   return constantTimeEqual(suppliedKey, env.ADMIN_KEY);
 }
 
-async function handleScheduled(env) {
-  if (!env.DB) throw new Error("D1 binding DB is not configured");
-  const now = new Date().toISOString();
-  const { results = [] } = await env.DB.prepare(
-    "SELECT id, text, photo, buttons_json FROM scheduled_posts WHERE status = 'pending' AND scheduled_at <= ? ORDER BY scheduled_at ASC LIMIT 10"
-  ).bind(now).all();
-
-  for (const post of results) {
-    const claimed = await env.DB.prepare(
-      "UPDATE scheduled_posts SET status = 'sending', updated_at = ? WHERE id = ? AND status = 'pending'"
-    ).bind(now, post.id).run();
-    if (!claimed.meta || claimed.meta.changes !== 1) continue;
-
-    try {
-      const sent = await sendTelegram(env, {
-        text: post.text,
-        photo: post.photo || "",
-        buttons: JSON.parse(post.buttons_json || "[]")
-      });
-      await env.DB.prepare(
-        "UPDATE scheduled_posts SET status = 'sent', telegram_message_id = ?, error = NULL, updated_at = ? WHERE id = ?"
-      ).bind(String(sent.message_id), new Date().toISOString(), post.id).run();
-    } catch (error) {
-      await env.DB.prepare(
-        "UPDATE scheduled_posts SET status = 'failed', error = ?, updated_at = ? WHERE id = ?"
-      ).bind(String(error.message || "Telegram send failed").slice(0, 500), new Date().toISOString(), post.id).run();
-    }
-  }
-}
-
 export default {
   async fetch(request, env) {
     const allowedOrigin = env.ALLOWED_ORIGIN || "";
@@ -123,12 +93,12 @@ export default {
 
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/health") {
-      return json({ ok: true, service: "AniWatch Media Telegram bridge", scheduler: Boolean(env.DB) }, 200, allowedOrigin || origin);
+      return json({ ok: true, service: "AniWatch Media Telegram bridge", }, 200, allowedOrigin || origin);
     }
-    if (!["POST", "GET", "DELETE"].includes(request.method)) {
+    if (!["POST", "GET"].includes(request.method)) {
       return json({ error: "Method not allowed" }, 405, allowedOrigin || origin);
     }
-    if (!["/publish", "/schedule", "/scheduled"].includes(url.pathname) && !/^\/scheduled\/\d+$/.test(url.pathname)) {
+    if (url.pathname !== "/publish") {
       return json({ error: "Not found" }, 404, allowedOrigin || origin);
     }
     if (!env.TELEGRAM_BOT_TOKEN || !env.ADMIN_KEY || !env.TELEGRAM_CHANNEL_ID) {
@@ -156,53 +126,6 @@ export default {
       }
     }
 
-    if (url.pathname === "/schedule" && request.method === "POST") {
-      if (!env.DB) return json({ error: "Scheduler database is not configured. Bind a D1 database as DB." }, 503, allowedOrigin || origin);
-      let payload;
-      try {
-        const raw = await request.text();
-        if (raw.length > 12000) return json({ error: "Request is too large" }, 413, allowedOrigin || origin);
-        payload = JSON.parse(raw);
-      } catch {
-        return json({ error: "Invalid JSON" }, 400, allowedOrigin || origin);
-      }
-      let post;
-      try { post = validatePost(payload); }
-      catch (error) { return json({ error: error.message }, 400, allowedOrigin || origin); }
-      const scheduledAt = new Date(payload.scheduled_at);
-      const now = Date.now();
-      if (!payload.scheduled_at || Number.isNaN(scheduledAt.getTime()) || scheduledAt.getTime() < now + 60000 || scheduledAt.getTime() > now + 30 * 86400000) {
-        return json({ error: "Choose a publication time at least 1 minute and no more than 30 days ahead." }, 400, allowedOrigin || origin);
-      }
-      const created = new Date().toISOString();
-      const result = await env.DB.prepare(
-        "INSERT INTO scheduled_posts (text, photo, buttons_json, scheduled_at, status, created_at, updated_at) VALUES (?, ?, ?, ?, 'pending', ?, ?)"
-      ).bind(post.text, post.photo, JSON.stringify(post.buttons), scheduledAt.toISOString(), created, created).run();
-      return json({ ok: true, id: result.meta.last_row_id, scheduled_at: scheduledAt.toISOString() }, 201, allowedOrigin || origin);
-    }
-
-    if (url.pathname === "/scheduled" && request.method === "GET") {
-      if (!env.DB) return json({ error: "Scheduler database is not configured. Bind a D1 database as DB." }, 503, allowedOrigin || origin);
-      const { results = [] } = await env.DB.prepare(
-        "SELECT id, text, photo, buttons_json, scheduled_at, status, error, telegram_message_id, created_at FROM scheduled_posts ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'sending' THEN 1 ELSE 2 END, scheduled_at ASC LIMIT 50"
-      ).all();
-      return json({ ok: true, posts: results.map(post => ({ ...post, buttons: JSON.parse(post.buttons_json || "[]") })) }, 200, allowedOrigin || origin);
-    }
-
-    const deleteMatch = url.pathname.match(/^\/scheduled\/(\d+)$/);
-    if (deleteMatch && request.method === "DELETE") {
-      if (!env.DB) return json({ error: "Scheduler database is not configured. Bind a D1 database as DB." }, 503, allowedOrigin || origin);
-      const result = await env.DB.prepare(
-        "DELETE FROM scheduled_posts WHERE id = ? AND status = 'pending'"
-      ).bind(Number(deleteMatch[1])).run();
-      if (!result.meta || result.meta.changes !== 1) return json({ error: "Scheduled post not found or already processing" }, 409, allowedOrigin || origin);
-      return json({ ok: true }, 200, allowedOrigin || origin);
-    }
-
     return json({ error: "Not found" }, 404, allowedOrigin || origin);
   },
-
-  async scheduled(controller, env, ctx) {
-    ctx.waitUntil(handleScheduled(env));
-  }
 };
