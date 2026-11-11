@@ -11,6 +11,14 @@
     button,input,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--panel2);color:var(--text)}button.primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:650}button.danger{color:#ff9ca3}button:disabled{opacity:.5;cursor:not-allowed}
     .wrap{max-width:1160px;margin:auto;padding:28px 20px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:25px}.brand{display:flex;align-items:center;gap:13px}.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#a89cff,#5e54c8);display:grid;place-items:center;font-weight:900;font-size:20px}.brand h1{font-size:19px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.tag{font-size:12px;color:#bcb5ff;border:1px solid #49436f;border-radius:99px;padding:5px 9px}
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat,.panel{background:rgba(21,26,36,.94);border:1px solid var(--line);border-radius:17px}.stat{padding:16px}.stat b{display:block;font-size:25px}.stat span{color:var(--muted);font-size:12px}.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:16px}.panel{padding:19px}.panel h2{font-size:16px;margin:0 0 16px}.field{display:grid;gap:7px;margin-bottom:14px}.field label{color:#c4ccda;font-size:13px}.field input,.field textarea{width:100%;border:1px solid var(--line);background:#0f141e;color:var(--text);border-radius:11px;padding:11px 12px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--accent)}textarea{min-height:180px;resize:vertical}.hint{font-size:12px;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.preview{background:#101722;border:1px solid var(--line);border-radius:14px;padding:15px;min-height:150px;white-space:pre-wrap;overflow-wrap:anywhere}.preview-head{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:10px}.list{display:grid;gap:9px}.item{border:1px solid var(--line);background:#111722;border-radius:12px;padding:12px}.item p{margin:0 0 9px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:90px;overflow:hidden}.item small{color:var(--muted)}.item-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.item-actions button{padding:7px 10px;font-size:12px}.status{font-size:11px;color:var(--good)}.notice{padding:11px 13px;border-radius:11px;background:#211f38;border:1px solid #39345e;color:#c8c2ff;font-size:12px;margin-bottom:16px}.error{color:var(--danger)}.empty{color:var(--muted);font-size:13px;text-align:center;padding:22px 8px}.toolbar{display:flex;flex-wrap:wrap;gap:6px}.toolbar button{padding:6px 10px;font-size:12px}.link-editor{display:grid;grid-template-columns:1fr 1.5fr auto;gap:7px;margin:8px 0}.link-editor input{min-width:0;border:1px solid var(--line);background:#0f141e;color:var(--text);border-radius:9px;padding:9px}.foot{color:var(--muted);font-size:11px;text-align:center;margin-top:22px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+    .view{display:none}.view.active{display:block}.subnav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+    .metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.metric{background:#111722;border:1px solid var(--line);border-radius:13px;padding:15px}.metric strong{font-size:25px;display:block}.metric span{font-size:12px;color:var(--muted)}
+    .chart{display:flex;align-items:flex-end;gap:8px;min-height:170px;padding:16px 8px 5px;border-bottom:1px solid var(--line)}.bar-wrap{flex:1;min-width:0;display:grid;grid-template-rows:1fr auto;gap:7px;height:145px;align-items:end;text-align:center}.bar{width:100%;min-height:3px;background:linear-gradient(180deg,#a89cff,#5e54c8);border-radius:7px 7px 2px 2px;align-self:end}.bar-label{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}.chart-note{color:var(--muted);font-size:12px;margin-top:10px}
+    .history-list{display:grid;gap:9px}.history-row{padding:12px;border:1px solid var(--line);background:#111722;border-radius:12px}.history-row p{margin:0 0 7px;white-space:pre-wrap;overflow-wrap:anywhere}.history-row small{color:var(--muted)}
+    .ai-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px}.ai-output{min-height:250px;white-space:pre-wrap;overflow-wrap:anywhere;background:#101722;border:1px solid var(--line);border-radius:12px;padding:14px}.ai-output:empty:before{content:"Ответ ИИ появится здесь";color:var(--muted)}
+    .field select{width:100%;border:1px solid var(--line);background:#0f141e;color:var(--text);border-radius:11px;padding:11px 12px}.pill-note{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-size:11px}
+    @media(max-width:760px){.ai-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chart{gap:4px}.metric strong{font-size:21px}}
     @media(max-width:760px){.wrap{padding:18px 13px 40px}.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr);gap:8px}.stat{padding:12px}.stat b{font-size:21px}.top{align-items:flex-start}.tag{display:none}}
   </style>
 </head>
@@ -21,6 +29,8 @@
       <span class="tag">PRIVATE WORKSPACE</span>
     </header>
     <div class="notice">Черновики хранятся в этом браузере. Публикация отправляется в Telegram только вручную и после отдельного подтверждения. Не вставляй токен Telegram-бота в эту страницу.</div>
+    <nav class="tabs" aria-label="Разделы панели"><button type="button" data-view="editor" aria-selected="true">Редактор</button><button type="button" data-view="analytics" aria-selected="false">Аналитика</button><button type="button" data-view="assistant" aria-selected="false">ИИ-ассистент</button></nav>
+    <section class="view active" id="editorView">
     <section class="stats">
       <div class="stat"><b id="draftCount">0</b><span>Черновики</span></div>
       <div class="stat"><b id="readyCount">0</b><span>Готовы к публикации</span></div>
@@ -34,6 +44,7 @@
         <div class="field"><label for="postText">Текст публикации</label><div class="toolbar"><button type="button" data-wrap="**">Жирный</button><button type="button" data-wrap="__">Курсив</button><button type="button" data-wrap="~~">Зачёркнутый</button><button type="button" data-wrap="`">Моноширинный</button><button type="button" id="linkFormatBtn">Ссылка</button></div><textarea id="postText" maxlength="4096" placeholder="Напиши текст поста AniWatch..."></textarea><span class="hint"><span id="charCount">0</span>/4096 символов · **жирный**, __курсив__, ~~зачёркнутый~~, `код`, [ссылка](https://...)</span></div>
         <div class="field"><label>Кнопки под публикацией</label><div id="buttonList"></div><button type="button" id="addButton" style="margin-top:7px">+ Добавить кнопку-ссылку</button><span class="hint">До 6 кнопок, каждая ведёт на HTTP/HTTPS-ссылку.</span></div>
         <div class="field"><label for="photoUrl">Ссылка на изображение (необязательно)</label><input id="photoUrl" type="url" placeholder="https://..."><span class="hint">Изображение должно быть общедоступно по прямой HTTPS-ссылке.</span></div>
+        <div class="field"><label for="videoUrl">Ссылка на видео (необязательно)</label><input id="videoUrl" type="url" placeholder="https://..."><span class="hint">Прямая HTTPS-ссылка на видео. Нельзя использовать одновременно с изображением.</span></div>
         <div class="actions"><button id="saveBtn">Сохранить черновик</button><button class="primary" id="publishBtn">Опубликовать сейчас</button><button id="clearBtn">Очистить</button></div>
         <p id="feedback" class="hint" role="status" aria-live="polite"></p>
       </section>
@@ -46,13 +57,48 @@
         <div class="list" id="draftList"><div class="empty">Пока нет сохранённых черновиков.</div></div>
       </aside>
     </div>
-    <div class="foot">AniWatch Media · Первая версия · Публикации выполняются только вручную после подтверждения.</div>
+    </section>
+    <section class="view" id="analyticsView">
+      <div class="panel">
+        <div class="subnav"><div><h2 style="margin:0 0 4px">Аналитика канала</h2><span class="hint">Данные Telegram Bot API + история этой панели</span></div><button class="primary" id="refreshAnalytics">Обновить статистику</button></div>
+        <div class="metric-grid">
+          <div class="metric"><strong id="memberMetric">—</strong><span>Подписчики сейчас</span></div>
+          <div class="metric"><strong id="growthMetric">—</strong><span>Изменение с первого замера</span></div>
+          <div class="metric"><strong id="publishedMetric">0</strong><span>Публикации из панели</span></div>
+        </div>
+        <h2>Динамика подписчиков</h2><div id="subscriberChart" class="chart"></div><p id="analyticsStatus" class="chart-note">Нажми «Обновить статистику», чтобы получить первый замер. История замеров хранится в этом браузере.</p>
+        <div class="notice" style="margin:16px 0 0">Ограничение Telegram: Bot API позволяет получить текущее число подписчиков, но не выдаёт полную статистику просмотров и реакций отдельных постов. Поэтому здесь не отображаются выдуманные просмотры. Для детальной статистики постов потребуется отдельная авторизованная интеграция MTProto и доступ канала к статистике.</div>
+        <h2 style="margin-top:24px">История публикаций</h2><div id="historyList" class="history-list"><div class="empty">Публикаций из этой панели пока нет.</div></div>
+        <div class="actions"><button id="exportDataBtn">Экспортировать историю и замеры</button><button id="clearAnalyticsBtn" class="danger">Очистить локальную аналитику</button></div>
+      </div>
+    </section>
+    <section class="view" id="assistantView">
+      <div class="panel">
+        <div class="subnav"><div><h2 style="margin:0 0 4px">ИИ-ассистент AniWatch</h2><span class="hint">Редактор, генератор идей и контент-стратег</span></div><span class="pill-note">Cloudflare Workers AI</span></div>
+        <div class="ai-grid">
+          <div>
+            <div class="field"><label for="aiTask">Что нужно сделать</label><select id="aiTask"><option value="write">Написать публикацию</option><option value="ideas">Предложить идеи</option><option value="rewrite">Улучшить мой текст</option><option value="plan">Контент-план на 7 дней</option></select></div>
+            <div class="field"><label for="aiPrompt">Задача</label><textarea id="aiPrompt" style="min-height:115px" placeholder="Например: подготовь пост о том, почему стоит посмотреть ..."></textarea></div>
+            <div class="field"><label for="aiContext">Исходный текст / факты (необязательно)</label><textarea id="aiContext" style="min-height:125px" placeholder="Вставь факты, черновик, название аниме или вводные. ИИ не должен выдумывать даты и ссылки."></textarea></div>
+            <div class="actions"><button class="primary" id="runAiBtn">Сгенерировать</button><button id="useCurrentTextBtn">Взять текст из редактора</button></div>
+            <p id="aiStatus" class="hint" role="status" aria-live="polite">ИИ работает через Workers AI. Для него нужно подключить AI binding в настройках Cloudflare Worker.</p>
+          </div>
+          <div>
+            <h2>Результат</h2><div id="aiOutput" class="ai-output"></div>
+            <div class="actions"><button id="insertAiBtn">Вставить в редактор</button><button id="copyAiBtn">Копировать</button><button id="saveAiBtn">Сохранить как черновик</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="foot">AniWatch Media · Публикации отправляются только вручную после подтверждения. Черновики, история и аналитические замеры хранятся локально в этом браузере.</div>
   </main>
   <script>
     const $=id=>document.getElementById(id);
-    const KEY='aniwatch-media-drafts-v1', SENT='aniwatch-media-sent-v1';
+    const KEY='aniwatch-media-drafts-v1', SENT='aniwatch-media-sent-v1', HISTORY='aniwatch-media-history-v1', SNAPSHOTS='aniwatch-media-snapshots-v1';
     let drafts=JSON.parse(localStorage.getItem(KEY)||'[]');
     let sent=Number(localStorage.getItem(SENT)||0), editing=null;
+    let history=JSON.parse(localStorage.getItem(HISTORY)||'[]');
+    let snapshots=JSON.parse(localStorage.getItem(SNAPSHOTS)||'[]');
     let postButtons=[];
     $('apiUrl').value=localStorage.getItem('awm-api')||'';
     $('apiUrl').addEventListener('change',()=>localStorage.setItem('awm-api',$('apiUrl').value.trim()));
@@ -94,6 +140,7 @@
       area.setRangeText('['+selected+'](https://)',start,end,'select');area.focus();area.dispatchEvent(new Event('input'));
     };
     $('photoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('photoUrl').value||'Не добавлено';});
+    $('videoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('videoUrl').value?'Видео: '+$('videoUrl').value:($('photoUrl').value||'Не добавлено');});
     function feedback(msg,error=false){$('feedback').textContent=msg;$('feedback').className=error?'hint error':'hint'}
     async function apiRequest(path,options={}) {
       const api=$('apiUrl').value.trim().replace(/\/$/,'');const key=$('adminKey').value.trim();
@@ -104,7 +151,7 @@
       return data;
     }
     function persist(){localStorage.setItem(KEY,JSON.stringify(drafts));render()}
-    function clearForm(){editing=null;postButtons=[];renderButtons();$('postText').value='';$('photoUrl').value='';$('charCount').textContent='0';updatePreview();$('photoPreview').textContent='Не добавлено';feedback('')}
+    function clearForm(){editing=null;postButtons=[];renderButtons();$('postText').value='';$('photoUrl').value='';$('videoUrl').value='';$('charCount').textContent='0';updatePreview();$('photoPreview').textContent='Не добавлено';feedback('')}
     function render(){
       $('draftCount').textContent=drafts.length;$('readyCount').textContent=drafts.length;$('sentCount').textContent=sent;
       $('draftList').innerHTML='';
@@ -114,33 +161,104 @@
         const p=document.createElement('p');p.textContent=d.text;
         const small=document.createElement('small');small.textContent=new Date(d.updated).toLocaleString('ru-RU')+(d.photo?' · изображение':'');
         const actions=document.createElement('div');actions.className='item-actions';
-        const edit=document.createElement('button');edit.textContent='Изменить';edit.onclick=()=>{editing=d.id;postButtons=Array.isArray(d.buttons)?d.buttons.map(x=>({...x})):[];renderButtons();$('postText').value=d.text;$('photoUrl').value=d.photo||'';$('postText').dispatchEvent(new Event('input'));$('photoUrl').dispatchEvent(new Event('input'));window.scrollTo({top:0,behavior:'smooth'})};
+        const edit=document.createElement('button');edit.textContent='Изменить';edit.onclick=()=>{editing=d.id;postButtons=Array.isArray(d.buttons)?d.buttons.map(x=>({...x})):[];renderButtons();$('postText').value=d.text;$('photoUrl').value=d.photo||'';$('videoUrl').value=d.video||'';$('postText').dispatchEvent(new Event('input'));$('photoUrl').dispatchEvent(new Event('input'));window.scrollTo({top:0,behavior:'smooth'})};
         const del=document.createElement('button');del.className='danger';del.textContent='Удалить';del.onclick=()=>{drafts=drafts.filter(x=>x.id!==d.id);persist()};
         actions.append(edit,del);item.append(p,small,actions);$('draftList').append(item);
       });
     }
-    $('saveBtn').onclick=()=>{const text=$('postText').value.trim();if(!text){feedback('Добавь текст публикации.',true);return}const d={id:editing||crypto.randomUUID(),text,photo:$('photoUrl').value.trim(),buttons:postButtons,updated:new Date().toISOString()};const i=drafts.findIndex(x=>x.id===d.id);if(i>=0)drafts[i]=d;else drafts.push(d);persist();clearForm();feedback('Черновик сохранён в этом браузере.')};
+    $('saveBtn').onclick=()=>{const text=$('postText').value.trim();if(!text){feedback('Добавь текст публикации.',true);return}const d={id:editing||crypto.randomUUID(),text,photo:$('photoUrl').value.trim(),video:$('videoUrl').value.trim(),buttons:postButtons,updated:new Date().toISOString()};const i=drafts.findIndex(x=>x.id===d.id);if(i>=0)drafts[i]=d;else drafts.push(d);persist();clearForm();feedback('Черновик сохранён в этом браузере.')};
     $('clearBtn').onclick=clearForm;
     $('publishBtn').onclick=async()=>{
-      const rawText=$('postText').value.trim(),text=toTelegramHtml(rawText),photo=$('photoUrl').value.trim(),api=$('apiUrl').value.trim().replace(/\/$/,'');
+      const rawText=$('postText').value.trim(),text=toTelegramHtml(rawText),photo=$('photoUrl').value.trim(),video=$('videoUrl').value.trim(),api=$('apiUrl').value.trim().replace(/\/$/,'');
       const key=$('adminKey').value.trim();
       if(!rawText){feedback('Добавь текст публикации.',true);return}
+      if(photo&&video){feedback('Выбери изображение или видео — одновременно нельзя.',true);return}
       const buttons=postButtons.filter(b=>b.label.trim()||b.url.trim()).map(b=>({text:b.label.trim(),url:b.url.trim()}));
       if(buttons.some(b=>!b.text||!/^https?:\/\//i.test(b.url))){feedback('У каждой кнопки должны быть текст и корректная HTTP/HTTPS-ссылка.',true);return}
       if(!api||!key){feedback('Укажи адрес Worker API и ключ доступа.',true);return}
       if(!confirm('Опубликовать эту запись в Telegram-канале @aniwatch_1?'))return;
       $('publishBtn').disabled=true;feedback('Отправляю публикацию...');
       try{
-        const res=await fetch(api+'/publish',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({text,photo,buttons})});
+        const res=await fetch(api+'/publish',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({text,photo,video,buttons})});
         const data=await res.json().catch(()=>({}));
         if(!res.ok)throw new Error(data.error||'Ошибка публикации: HTTP '+res.status);
         sent++;localStorage.setItem(SENT,String(sent));
+        history.push({id:data.message_id||crypto.randomUUID(),message_id:data.message_id||null,text:rawText,media:photo?'photo':video?'video':'text',publishedAt:new Date().toISOString()});
+        history=history.slice(-250);localStorage.setItem(HISTORY,JSON.stringify(history));
         if(editing){drafts=drafts.filter(x=>x.id!==editing);persist()}
-        render();clearForm();feedback('Опубликовано. Telegram message_id: '+(data.message_id??'получен'));
+        render();renderHistory();clearForm();feedback('Опубликовано. Telegram message_id: '+(data.message_id??'получен'));
       }catch(e){feedback(e.message||'Не удалось отправить публикацию.',true)}
       finally{$('publishBtn').disabled=false}
     };
-    render();
+    function switchView(name){
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===name)));
+      const target=$(name+'View');if(target)target.classList.add('active');
+      if(name==='analytics')renderAnalytics();
+    }
+    document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+    function renderHistory(){
+      const root=$('historyList');root.replaceChildren();
+      if(!history.length){root.innerHTML='<div class="empty">Публикаций из этой панели пока нет.</div>';return}
+      history.slice().reverse().forEach(item=>{
+        const row=document.createElement('div');row.className='history-row';
+        const p=document.createElement('p');p.textContent=item.text;
+        const small=document.createElement('small');small.textContent=new Date(item.publishedAt).toLocaleString('ru-RU')+' · '+(item.media==='photo'?'изображение':item.media==='video'?'видео':'текст')+' · message_id: '+(item.message_id||'—');
+        row.append(p,small);root.append(row);
+      });
+    }
+    function renderAnalytics(){
+      $('publishedMetric').textContent=history.length;
+      const latest=snapshots.length?snapshots[snapshots.length-1].count:null;
+      $('memberMetric').textContent=latest===null?'—':latest.toLocaleString('ru-RU');
+      const first=snapshots.length?snapshots[0].count:null;
+      $('growthMetric').textContent=first===null||latest===null?'—':((latest-first)>0?'+':'')+(latest-first).toLocaleString('ru-RU');
+      const chart=$('subscriberChart');chart.replaceChildren();
+      if(!snapshots.length){chart.innerHTML='<div class="empty" style="width:100%">Пока нет замеров. Нажми «Обновить статистику».</div>';return}
+      const shown=snapshots.slice(-14),min=Math.min.apply(null,shown.map(x=>x.count)),max=Math.max.apply(null,shown.map(x=>x.count)),range=Math.max(1,max-min);
+      shown.forEach(s=>{
+        const wrap=document.createElement('div');wrap.className='bar-wrap';
+        const bar=document.createElement('div');bar.className='bar';bar.style.height=(18+((s.count-min)/range)*82)+'%';bar.title=s.count+' подписчиков';
+        const label=document.createElement('div');label.className='bar-label';label.textContent=new Date(s.at).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});
+        wrap.append(bar,label);chart.append(wrap);
+      });
+    }
+    async function refreshAnalytics(){
+      $('refreshAnalytics').disabled=true;$('analyticsStatus').textContent='Запрашиваю число подписчиков у Telegram...';
+      try{
+        const result=await apiRequest('/analytics',{method:'GET'});
+        const point={count:Number(result.member_count),at:result.measured_at||new Date().toISOString()};
+        if(!Number.isFinite(point.count))throw new Error('Telegram вернул некорректное число подписчиков.');
+        if(!snapshots.length||snapshots[snapshots.length-1].count!==point.count||new Date(point.at)-new Date(snapshots[snapshots.length-1].at)>3600000)snapshots.push(point);
+        snapshots=snapshots.slice(-365);localStorage.setItem(SNAPSHOTS,JSON.stringify(snapshots));
+        $('analyticsStatus').textContent='Обновлено '+new Date(point.at).toLocaleString('ru-RU')+'. История замеров хранится только в этом браузере.';
+        renderAnalytics();
+      }catch(e){$('analyticsStatus').textContent=e.message||'Не удалось загрузить аналитику.'}
+      finally{$('refreshAnalytics').disabled=false}
+    }
+    $('refreshAnalytics').addEventListener('click',refreshAnalytics);
+    $('exportDataBtn').addEventListener('click',()=>{
+      const blob=new Blob([JSON.stringify({history,snapshots,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aniwatch-media-analytics.json';a.click();URL.revokeObjectURL(url);
+    });
+    $('clearAnalyticsBtn').addEventListener('click',()=>{
+      if(!confirm('Удалить локальную историю публикаций и замеры подписчиков?'))return;
+      history=[];snapshots=[];localStorage.removeItem(HISTORY);localStorage.removeItem(SNAPSHOTS);renderHistory();renderAnalytics();
+    });
+    $('runAiBtn').addEventListener('click',async()=>{
+      const prompt=$('aiPrompt').value.trim();if(!prompt){$('aiStatus').textContent='Сначала опиши задачу.';return}
+      $('runAiBtn').disabled=true;$('aiStatus').textContent='ИИ готовит ответ...';$('aiOutput').textContent='';
+      try{
+        const result=await apiRequest('/ai',{method:'POST',body:JSON.stringify({task:$('aiTask').value,prompt,context:$('aiContext').value})});
+        $('aiOutput').textContent=result.text||'Пустой ответ';$('aiStatus').textContent='Готово · '+(result.model||'Workers AI');
+      }catch(e){$('aiStatus').textContent=e.message||'Не удалось получить ответ от ИИ.'}
+      finally{$('runAiBtn').disabled=false}
+    });
+    $('useCurrentTextBtn').addEventListener('click',()=>{$('aiContext').value=$('postText').value});
+    $('insertAiBtn').addEventListener('click',()=>{const value=$('aiOutput').textContent.trim();if(!value)return;switchView('editor');$('postText').value=value;$('postText').dispatchEvent(new Event('input'));});
+    $('copyAiBtn').addEventListener('click',async()=>{const value=$('aiOutput').textContent.trim();if(!value)return;try{await navigator.clipboard.writeText(value);$('aiStatus').textContent='Скопировано.'}catch{$('aiStatus').textContent='Браузер не разрешил доступ к буферу обмена.'}});
+    $('saveAiBtn').addEventListener('click',()=>{const text=$('aiOutput').textContent.trim();if(!text)return;const d={id:crypto.randomUUID(),text,photo:'',video:'',buttons:[],updated:new Date().toISOString()};drafts.push(d);persist();$('aiStatus').textContent='Черновик сохранён.'});
+    renderHistory();renderAnalytics();render();
   </script>
 </body>
 </html>
