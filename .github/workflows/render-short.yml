@@ -6,11 +6,11 @@ on:
       manifest:
         description: Path to a JSON render manifest in the repository
         required: true
-        default: shorts/jobs/example.json
+        default: shorts/jobs/killua.json
       output_name:
         description: Output MP4 filename without extension
         required: true
-        default: aniwatch-short
+        default: killua-short
 
 permissions:
   contents: read
