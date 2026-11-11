@@ -154,7 +154,7 @@
       const buttons=postButtons.filter(b=>b.label.trim()||b.url.trim()).map(b=>({text:b.label.trim(),url:b.url.trim()}));
       const localValue=$('scheduledAt').value;const scheduledAt=localValue?new Date(localValue):null;
       if(!rawText){feedback('Добавь текст публикации.',true);return}
-      if(buttons.some(b=>!b.text||!/^https?:\\/\\//i.test(b.url))){feedback('У каждой кнопки должны быть текст и корректная HTTP/HTTPS-ссылка.',true);return}
+      if(buttons.some(b=>!b.text||!/^https?:\/\//i.test(b.url))){feedback('У каждой кнопки должны быть текст и корректная HTTP/HTTPS-ссылка.',true);return}
       if(!scheduledAt||Number.isNaN(scheduledAt.getTime())||scheduledAt.getTime()<Date.now()+60000){feedback('Выбери время минимум через одну минуту.',true);return}
       if(!confirm('Добавить публикацию в очередь на '+scheduledAt.toLocaleString('ru-RU')+'?'))return;
       $('scheduleBtn').disabled=true;feedback('Сохраняю публикацию в очереди...');
