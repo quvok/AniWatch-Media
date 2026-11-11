@@ -1,0 +1,13 @@
+{
+  "images": [
+    {"url": "https://example.com/replace-with-authorized-image-1.jpg", "duration": 4},
+    {"url": "https://example.com/replace-with-authorized-image-2.jpg", "duration": 4},
+    {"url": "https://example.com/replace-with-authorized-image-3.jpg", "duration": 4},
+    {"url": "https://example.com/replace-with-authorized-image-4.jpg", "duration": 4},
+    {"url": "https://example.com/replace-with-authorized-image-5.jpg", "duration": 4}
+  ],
+  "voice": "assets/voiceover.mp3",
+  "music": "assets/music.wav",
+  "music_volume": 0.10,
+  "subtitles": "assets/subtitles.srt"
+}
