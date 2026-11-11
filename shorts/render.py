@@ -79,7 +79,7 @@ def main():
     subtitles = optional_asset(manifest.get('subtitles'), 'subtitles')
     if subtitles:
         p = str(subtitles).replace('\\','\\\\').replace(':','\\:').replace("'", "\\'")
-        filters.append(f"[vbase]subtitles='{p}':force_style='FontName=DejaVu Sans,FontSize=17,Outline=2,Shadow=1,Alignment=2,MarginV=150'[vsub]")
+        filters.append(f"[vbase]subtitles='{p}':force_style='FontName=DejaVu Sans,FontSize=52,Bold=1,Outline=4,Shadow=1,Alignment=2,MarginV=190,PrimaryColour=&H00FFFFFF,OutlineColour=&H00101010'[vsub]")
         video_map = '[vsub]'
     voice, music = optional_asset(manifest.get('voice'), 'voice'), optional_asset(manifest.get('music'), 'music')
     audio, idx = [], len(clips)
@@ -94,7 +94,7 @@ def main():
         filters.append(f'[{idx}:a]volume={vol},aresample=44100,atrim=0:{total:.3f}[music]')
         audio.append('[music]')
     if len(audio) == 2:
-        filters.append('[voice][music]amix=inputs=2:duration=first:dropout_transition=2[aout]'); amap='[aout]'
+        filters.append("[voice][music]amix=inputs=2:duration=first:dropout_transition=2:weights='1 0.5':normalize=0[aout]"); amap='[aout]'
     elif audio: amap=audio[0]
     else: amap=None
     cmd = ['ffmpeg','-hide_banner','-y',*inputs,'-filter_complex',';'.join(filters),'-map',video_map]

@@ -3,23 +3,33 @@
     {
       "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
       "start": 0,
-      "duration": 5
+      "duration": 2.8
     },
     {
       "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
-      "start": 5,
-      "duration": 5
+      "start": 2.8,
+      "duration": 2.7
     },
     {
       "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
-      "start": 10,
-      "duration": 5
+      "start": 5.5,
+      "duration": 2.5
     },
     {
       "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
-      "start": 15,
-      "duration": 5
+      "start": 10.1,
+      "duration": 2.6
+    },
+    {
+      "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
+      "start": 12.7,
+      "duration": 2.6
     }
   ],
-  "music_volume": 0.12
+  "narration": {
+    "text": "Киллуа вырос в семье убийц. Его Нэн превращает ауру в электричество. «Божественная скорость» позволяет реагировать почти мгновенно. Но главное — он хочет сам выбирать свою жизнь. Смотри на AniWatch.",
+    "voice": "ru-RU-SvetlanaNeural",
+    "rate": "+12%"
+  },
+  "music_volume": 0.5
 }
