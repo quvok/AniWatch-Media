@@ -52,10 +52,11 @@ function validatePost(payload) {
 }
 
 async function telegramRequest(env, method, payload) {
+  const multipart = payload instanceof FormData;
   const response = await fetch("https://api.telegram.org/bot" + env.TELEGRAM_BOT_TOKEN + "/" + method, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    ...(multipart ? {} : { headers: { "Content-Type": "application/json" } }),
+    body: multipart ? payload : JSON.stringify(payload)
   });
   const result = await response.json();
   if (!response.ok || !result.ok) throw new Error(result.description || "Telegram API request failed");
