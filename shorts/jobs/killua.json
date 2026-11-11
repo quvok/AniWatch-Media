@@ -1,0 +1,25 @@
+{
+  "videos": [
+    {
+      "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
+      "start": 0,
+      "duration": 5
+    },
+    {
+      "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
+      "start": 5,
+      "duration": 5
+    },
+    {
+      "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
+      "start": 10,
+      "duration": 5
+    },
+    {
+      "path": "shorts/assets/killua/Killua Godspeed Transformation 4K - Hunter x Hunter 119.mp4",
+      "start": 15,
+      "duration": 5
+    }
+  ],
+  "music_volume": 0.12
+}
