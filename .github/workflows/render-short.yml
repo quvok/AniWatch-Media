@@ -1,0 +1,41 @@
+name: Render AniWatch Short
+
+on:
+  workflow_dispatch:
+    inputs:
+      manifest:
+        description: Path to a JSON render manifest in the repository
+        required: true
+        default: shorts/jobs/example.json
+      output_name:
+        description: Output MP4 filename without extension
+        required: true
+        default: aniwatch-short
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shorts-render
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+      - name: Install FFmpeg and fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - name: Render vertical video
+        run: python3 shorts/render.py "${{ inputs.manifest }}" "${{ inputs.output_name }}"
+      - name: Upload MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.output_name }}
+          path: output/${{ inputs.output_name }}.mp4
+          if-no-files-found: error
+          retention-days: 7
