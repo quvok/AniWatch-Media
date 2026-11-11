@@ -30,6 +30,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python3 -m pip install --user edge-tts
+      - name: Generate narration, subtitles, and original music
+        run: python3 shorts/generate_assets.py "${{ inputs.manifest }}"
       - name: Render vertical video
         run: python3 shorts/render.py "${{ inputs.manifest }}" "${{ inputs.output_name }}"
       - name: Upload MP4
