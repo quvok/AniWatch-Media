@@ -9,21 +9,18 @@ A small static editorial dashboard for the public Telegram channel `@aniwatch_1`
 - Optional public HTTPS image URL.
 - Up to 6 inline URL buttons under a post.
 - Manual publish to Telegram after a browser confirmation.
-- Server-side scheduled posts stored in Cloudflare D1 and sent by a Cloudflare Cron Trigger.
-- Scheduled queue view with status and cancellation for pending posts.
 - Publish history counter stored locally in the current browser.
 - Cloudflare Worker acts as a private bridge to Telegram Bot API.
 
-**Not implemented yet:** server-side draft sync, Telegram analytics, comments inbox, AI generation, and multi-user accounts. A browser-local draft is not backed up or shared between devices.
+**Not implemented:** scheduled publishing, server-side draft sync, Telegram analytics, comments inbox, AI generation, and multi-user accounts. A browser-local draft is not backed up or shared between devices.
 
 ## Architecture
 
 - GitHub Pages hosts `index.html`.
 - Cloudflare Worker in `worker/worker.js` holds Telegram credentials and sends posts.
-- Cloudflare D1 stores the scheduled publishing queue.
-- A Cloudflare Cron Trigger runs every minute and sends due posts through the Telegram Bot API to `@aniwatch_1`.
+- The Worker exposes `/health` and the authenticated `/publish` endpoint.
 
-No OpenAI API key is required.
+No database, Cron Trigger, or OpenAI API key is required.
 
 ## 1. Configure the Telegram bot
 
@@ -52,11 +49,7 @@ For `ADMIN_KEY`, use a unique random value of at least 32 characters. Do not reu
 
 If you use a custom domain for Pages, set `ALLOWED_ORIGIN` to that exact origin instead. Do not include a path or trailing slash.
 
-5. Create a D1 database in Cloudflare Dashboard → Storage & databases → D1 SQL database. Name it `aniwatch-media-db`.
-6. Open the new database's SQL Console and execute the contents of `worker/migrations/0001_scheduled_posts.sql`.
-7. In Worker → Settings → Bindings, add a **D1 database** binding with variable name `DB` and select `aniwatch-media-db`.
-8. In Worker → Triggers → Cron Triggers, add the schedule `* * * * *` (once per minute). The Worker uses this trigger to publish due posts; do not use a browser timer.
-9. Open `https://YOUR-WORKER.workers.dev/health`. It should return JSON with `"scheduler":true`. If `scheduler` is false, the D1 binding is not attached.
+5. Open `https://YOUR-WORKER.workers.dev/health`. It should return JSON with `"ok":true`.
 
 ## 3. Enable GitHub Pages
 
@@ -70,8 +63,7 @@ If you use a custom domain for Pages, set `ALLOWED_ORIGIN` to that exact origin 
 1. Enter the Worker URL in **Адрес Worker API**.
 2. Enter the `ADMIN_KEY` in **Ключ доступа панели**.
 3. Write a post. With an image, Telegram limits the caption to 1024 characters. Use the formatting toolbar or syntax `**bold**`, `__italic__`, `~~strike~~`, `` `code` ``, `[link](https://example.com)`; optionally add an HTTPS image and up to 6 link buttons.
-4. Click **Опубликовать сейчас** and confirm the browser prompt, or select a local date/time and click **Запланировать**.
-5. Use **Обновить** in the queue to view pending, sent, and failed scheduled posts. Pending posts can be cancelled.
+4. Click **Опубликовать сейчас** and confirm the browser prompt.
 
 The access key is kept in the current tab's session memory only. The Worker checks it before contacting Telegram. Drafts are stored locally in the browser.
 
@@ -82,9 +74,8 @@ The access key is kept in the current tab's session memory only. The Worker chec
 - Restrict Worker CORS with the exact Pages origin.
 - Anyone who obtains the admin key can publish to the channel. Rotate it immediately if exposed.
 - This first version does not implement server-side rate limiting or audit logs. Keep the Worker URL and admin key private.
-- Telegram Bot API supports HTML-formatted text/photo captions and up to 6 URL buttons. Albums and video publishing are not implemented yet.
-- Scheduled publishing requires the D1 binding named `DB`, the migration, and a Cron Trigger set to `* * * * *`. Without all three, automatic publishing will not run.
-- The scheduler checks up to 10 due posts per minute. Scheduling is limited to 30 days ahead. Failed sends are retained with an error status for inspection; they are not retried automatically.
+- Telegram Bot API supports HTML-formatted text/photo captions and up to 6 URL buttons. Albums and video publishing are not implemented.
+- Posts are sent only by a manual action in the dashboard; there is no queue or automatic publishing.
 
 ## Local development
 
