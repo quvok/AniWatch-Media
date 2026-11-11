@@ -54,7 +54,7 @@ If you use a custom domain for Pages, set `ALLOWED_ORIGIN` to that exact origin 
 
 1. Open repository Settings → Pages.
 2. Under Build and deployment, choose **GitHub Actions**.
-3. The workflow in `.github/workflows/pages.yml` will deploy the static dashboard after a push to `main`.
+3. The workflow in `.github/workflows/pages.yml` deploys the static dashboard after a push to `main`. It can also be started manually from Actions → Deploy AniWatch Media to GitHub Pages → Run workflow.
 4. Wait for the Pages workflow to complete, then open the published URL.
 
 ## 4. Use the dashboard
