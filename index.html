@@ -226,7 +226,7 @@
         const btn=document.createElement('button');btn.type='button';btn.className='calendar-day'+(inside?'':' muted')+(key===selectedPlanDate?' selected':'')+(key===localDateKey(new Date())?' today':'');
         const number=document.createElement('span');number.textContent=String(date.getDate());
         const count=plans.filter(p=>p.date===key).length;const meta=document.createElement('small');meta.textContent=count?count+' пункт.':'';
-        btn.append(number,meta);btn.onclick=()=>{selectedPlanDate=key;$('planDate').value=key;renderCalendar();renderPlanItems()};
+        btn.append(number,meta);btn.onclick=()=>{selectedPlanDate=key;$('planDate').value=key;planMonth=new Date(date.getFullYear(),date.getMonth(),1);renderCalendar();renderPlanItems()};
         grid.append(btn);
       }
     }
@@ -303,7 +303,7 @@
     }
     $('refreshAnalytics').addEventListener('click',refreshAnalytics);
     $('exportDataBtn').addEventListener('click',()=>{
-      const blob=new Blob([JSON.stringify({history,snapshots,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
+      const blob=new Blob([JSON.stringify({history,snapshots,plans,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
       const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aniwatch-media-analytics.json';a.click();URL.revokeObjectURL(url);
     });
     $('clearAnalyticsBtn').addEventListener('click',()=>{
