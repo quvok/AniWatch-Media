@@ -79,7 +79,7 @@ def main():
     subtitles = optional_asset(manifest.get('subtitles'), 'subtitles')
     if subtitles:
         p = str(subtitles).replace('\\','\\\\').replace(':','\\:').replace("'", "\\'")
-        filters.append(f"[vbase]subtitles='{p}':force_style='FontName=DejaVu Sans,FontSize=17,Outline=2,Shadow=1,Alignment=2,MarginV=150'[vsub]")
+        filters.append(f"[vbase]subtitles='{p}':force_style='FontName=DejaVu Sans,FontSize=52,Bold=1,Outline=4,Shadow=1,Alignment=2,MarginV=190,PrimaryColour=&H00FFFFFF,OutlineColour=&H00101010'[vsub]")
         video_map = '[vsub]'
     voice, music = optional_asset(manifest.get('voice'), 'voice'), optional_asset(manifest.get('music'), 'music')
     audio, idx = [], len(clips)
