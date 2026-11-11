@@ -166,6 +166,28 @@
     };
     $('photoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('photoUrl').value?('Изображение: '+$('photoUrl').value):($('videoUrl').value?('Видео: '+$('videoUrl').value):'Не добавлено');});
     $('videoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('videoUrl').value?'Видео: '+$('videoUrl').value:($('photoUrl').value||'Не добавлено');});
+    function importChatDraftFromLink(){
+      const raw=window.location.hash.startsWith('#draft=')?window.location.hash.slice(7):'';
+      if(!raw)return;
+      try{
+        if(raw.length>14000)throw new Error('Ссылка с черновиком слишком большая.');
+        const data=JSON.parse(decodeURIComponent(raw));
+        if(!data||typeof data!=='object'||typeof data.text!=='string'||!data.text.trim())throw new Error('В ссылке нет текста публикации.');
+        if(data.text.length>4096)throw new Error('Текст превышает лимит Telegram в 4096 символов.');
+        const photo=typeof data.photo==='string'?data.photo:'';
+        const video=typeof data.video==='string'?data.video:'';
+        if(photo&&video)throw new Error('Нельзя одновременно импортировать фото и видео.');
+        for(const value of [photo,video])if(value){const u=new URL(value);if(!['https:','http:'].includes(u.protocol))throw new Error('Медиа должно быть доступно по HTTP/HTTPS.')}
+        const buttons=Array.isArray(data.buttons)?data.buttons.slice(0,6).map(b=>({label:String(b.label||b.text||'').slice(0,64),url:String(b.url||'')})):[];
+        for(const b of buttons){let u;try{u=new URL(b.url)}catch{throw new Error('Проверь подписи и ссылки кнопок в импортированном посте.')}if(!b.label||!['https:','http:'].includes(u.protocol))throw new Error('Проверь подписи и ссылки кнопок в импортированном посте.')}
+        editing=null;postButtons=buttons;renderButtons();
+        $('postText').value=data.text;$('photoUrl').value=photo;$('videoUrl').value=video;
+        $('postText').dispatchEvent(new Event('input'));$('photoUrl').dispatchEvent(new Event('input'));$('videoUrl').dispatchEvent(new Event('input'));
+        switchView('editor');
+        feedback('Черновик из ChatGPT загружен. Проверь текст и изображение, затем нажми «Опубликовать сейчас».');
+        window.history.replaceState(null,'',window.location.pathname+window.location.search);
+      }catch(error){feedback('Не удалось импортировать черновик: '+(error.message||'неверная ссылка'),true)}
+    }
     function feedback(msg,error=false){$('feedback').textContent=msg;$('feedback').className=error?'hint error':'hint'}
     async function apiRequest(path,options={}) {
       const api=$('apiUrl').value.trim().replace(/\/$/,'');const key=$('adminKey').value.trim();
@@ -331,6 +353,7 @@
     $('copyAiBtn').addEventListener('click',async()=>{const value=$('aiOutput').textContent.trim();if(!value)return;try{await navigator.clipboard.writeText(value);$('aiStatus').textContent='Скопировано.'}catch{$('aiStatus').textContent='Браузер не разрешил доступ к буферу обмена.'}});
     $('saveAiBtn').addEventListener('click',()=>{const text=$('aiOutput').textContent.trim();if(!text)return;const d={id:crypto.randomUUID(),text,photo:'',video:'',buttons:[],updated:new Date().toISOString()};drafts.push(d);persist();$('aiStatus').textContent='Черновик сохранён.'});
     renderHistory();renderAnalytics();renderCalendar();renderPlanItems();render();
+    importChatDraftFromLink();
   </script>
 </body>
 </html>

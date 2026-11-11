@@ -80,6 +80,29 @@ All endpoints except `/health` require `Authorization: Bearer ADMIN_KEY`. CORS i
 3. The workflow in `.github/workflows/pages.yml` deploys the static dashboard after a push to `main`.
 4. Wait for the Pages workflow to complete, then open the published URL.
 
+## ChatGPT draft handoff
+
+ChatGPT can prepare a post and provide a one-click handoff link to the dashboard. The link carries only the draft payload (text, optional public media URL, and up to six URL buttons) in the URL fragment:
+
+`https://quvok.github.io/AniWatch-Media/#draft=<URL-encoded-JSON>`
+
+Opening the link fills the editor and switches to the Editor tab. The user reviews the content and presses the existing **Опубликовать сейчас** button. Importing a link never publishes automatically.
+
+Example payload:
+
+```json
+{
+  "text": "**Новый пост AniWatch**\\nТекст публикации",
+  "photo": "https://example.com/public-image.jpg",
+  "video": "",
+  "buttons": [
+    { "label": "Открыть AniWatch", "url": "https://aniwatch1.ru/" }
+  ]
+}
+```
+
+Do not put the Worker admin key, Telegram bot token, private data, or unpublished credentials in the handoff URL. URL fragments are visible to the person opening the link and may be copied or shared. Public HTTPS media URLs are required for Telegram to fetch images/videos.
+
 ## 4. Use the dashboard
 
 1. Enter the Worker URL in **Адрес Worker API**.
