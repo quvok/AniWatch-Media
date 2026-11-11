@@ -64,6 +64,7 @@ export default {
 
     const text = typeof payload.text === "string" ? payload.text.trim() : "";
     const photo = typeof payload.photo === "string" ? payload.photo.trim() : "";
+    const buttons = Array.isArray(payload.buttons) ? payload.buttons : [];
 
     if (!text) {
       return json({ error: "Post text is required" }, 400, allowedOrigin || origin);
@@ -71,6 +72,22 @@ export default {
 
     if (text.length > 4096) {
       return json({ error: "Telegram text limit is 4096 characters" }, 400, allowedOrigin || origin);
+    }
+
+    if (buttons.length > 6) {
+      return json({ error: "No more than 6 inline buttons are allowed" }, 400, allowedOrigin || origin);
+    }
+
+    for (const button of buttons) {
+      if (!button || typeof button.text !== "string" || !button.text.trim() || button.text.length > 64 || typeof button.url !== "string") {
+        return json({ error: "Each inline button needs text (1-64 characters) and a URL" }, 400, allowedOrigin || origin);
+      }
+      try {
+        const buttonUrl = new URL(button.url);
+        if (buttonUrl.protocol !== "https:" && buttonUrl.protocol !== "http:") throw new Error("Invalid protocol");
+      } catch {
+        return json({ error: "Inline button URLs must be valid HTTP or HTTPS links" }, 400, allowedOrigin || origin);
+      }
     }
 
     if (photo) {
@@ -91,9 +108,10 @@ export default {
     }
 
     const method = photo ? "sendPhoto" : "sendMessage";
+    const replyMarkup = buttons.length ? { inline_keyboard: buttons.map(button => [{ text: button.text.trim(), url: button.url.trim() }]) } : undefined;
     const body = photo
-      ? { chat_id: env.TELEGRAM_CHANNEL_ID, photo: photo, caption: text }
-      : { chat_id: env.TELEGRAM_CHANNEL_ID, text: text, disable_web_page_preview: false };
+      ? { chat_id: env.TELEGRAM_CHANNEL_ID, photo: photo, caption: text, parse_mode: "HTML", ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }
+      : { chat_id: env.TELEGRAM_CHANNEL_ID, text: text, parse_mode: "HTML", disable_web_page_preview: false, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) };
 
     try {
       const tg = await fetch("https://api.telegram.org/bot" + env.TELEGRAM_BOT_TOKEN + "/" + method, {
