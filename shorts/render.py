@@ -94,7 +94,7 @@ def main():
         filters.append(f'[{idx}:a]volume={vol},aresample=44100,atrim=0:{total:.3f}[music]')
         audio.append('[music]')
     if len(audio) == 2:
-        filters.append('[voice][music]amix=inputs=2:duration=first:dropout_transition=2[aout]'); amap='[aout]'
+        filters.append("[voice][music]amix=inputs=2:duration=first:dropout_transition=2:weights='1 0.5':normalize=0[aout]"); amap='[aout]'
     elif audio: amap=audio[0]
     else: amap=None
     cmd = ['ffmpeg','-hide_banner','-y',*inputs,'-filter_complex',';'.join(filters),'-map',video_map]
