@@ -17,7 +17,8 @@
     .chart{display:flex;align-items:flex-end;gap:8px;min-height:170px;padding:16px 8px 5px;border-bottom:1px solid var(--line)}.bar-wrap{flex:1;min-width:0;display:grid;grid-template-rows:1fr auto;gap:7px;height:145px;align-items:end;text-align:center}.bar{width:100%;min-height:3px;background:linear-gradient(180deg,#a89cff,#5e54c8);border-radius:7px 7px 2px 2px;align-self:end}.bar-label{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}.chart-note{color:var(--muted);font-size:12px;margin-top:10px}
     .history-list{display:grid;gap:9px}.history-row{padding:12px;border:1px solid var(--line);background:#111722;border-radius:12px}.history-row p{margin:0 0 7px;white-space:pre-wrap;overflow-wrap:anywhere}.history-row small{color:var(--muted)}
     .ai-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px}.ai-output{min-height:250px;white-space:pre-wrap;overflow-wrap:anywhere;background:#101722;border:1px solid var(--line);border-radius:12px;padding:14px}.ai-output:empty:before{content:"Ответ ИИ появится здесь";color:var(--muted)}
-    .field select{width:100%;border:1px solid var(--line);background:#0f141e;color:var(--text);border-radius:11px;padding:11px 12px}.pill-note{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-size:11px}
+    .field select{width:100%;border:1px solid var(--line);background:#0f141e;color:var(--text);border-radius:11px;padding:11px 12px} .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.calendar-weekday{text-align:center;color:var(--muted);font-size:11px;padding:5px}.calendar-day{min-height:66px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:8px;background:#111722;border:1px solid var(--line);border-radius:10px;color:var(--text)}.calendar-day.muted{opacity:.35}.calendar-day.selected{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}.calendar-day.today{background:#211f38}.calendar-day small{font-size:10px;color:#c8c2ff}.plan-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.plan-meta select{background:#0f141e;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px}
+    .pill-note{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-size:11px}
     @media(max-width:760px){.ai-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chart{gap:4px}.metric strong{font-size:21px}}
     @media(max-width:760px){.wrap{padding:18px 13px 40px}.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr);gap:8px}.stat{padding:12px}.stat b{font-size:21px}.top{align-items:flex-start}.tag{display:none}}
   </style>
@@ -29,7 +30,7 @@
       <span class="tag">PRIVATE WORKSPACE</span>
     </header>
     <div class="notice">Черновики хранятся в этом браузере. Публикация отправляется в Telegram только вручную и после отдельного подтверждения. Не вставляй токен Telegram-бота в эту страницу.</div>
-    <nav class="tabs" aria-label="Разделы панели"><button type="button" data-view="editor" aria-selected="true">Редактор</button><button type="button" data-view="analytics" aria-selected="false">Аналитика</button><button type="button" data-view="assistant" aria-selected="false">ИИ-ассистент</button></nav>
+    <nav class="tabs" aria-label="Разделы панели"><button type="button" data-view="editor" aria-selected="true">Редактор</button><button type="button" data-view="analytics" aria-selected="false">Аналитика</button><button type="button" data-view="planner" aria-selected="false">Контент-план</button><button type="button" data-view="assistant" aria-selected="false">ИИ-ассистент</button></nav>
     <section class="view active" id="editorView">
     <section class="stats">
       <div class="stat"><b id="draftCount">0</b><span>Черновики</span></div>
@@ -72,6 +73,27 @@
         <div class="actions"><button id="exportDataBtn">Экспортировать историю и замеры</button><button id="clearAnalyticsBtn" class="danger">Очистить локальную аналитику</button></div>
       </div>
     </section>
+    <section class="view" id="plannerView">
+      <div class="panel">
+        <div class="subnav"><div><h2 style="margin:0 0 4px">Контент-план</h2><span class="hint">Редакционный календарь без автоматической отправки постов</span></div><span class="pill-note">Локально · без БД</span></div>
+        <div class="row" style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><button type="button" id="monthPrev" aria-label="Предыдущий месяц">←</button><strong id="calendarMonth" style="text-transform:capitalize"></strong><button type="button" id="monthNext" aria-label="Следующий месяц">→</button><span class="hint" style="margin-left:auto">Выбери дату в календаре</span></div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+        <div class="divider" style="height:1px;background:var(--line);margin:20px 0"></div>
+        <h2>Добавить пункт плана</h2>
+        <div class="ai-grid">
+          <div>
+            <div class="field"><label for="planDate">Дата</label><input id="planDate" type="date"></div>
+            <div class="field"><label for="planType">Формат</label><select id="planType"><option>Рекомендация</option><option>Подборка</option><option>Интерактив</option><option>Новость</option><option>Промо</option><option>Другое</option></select></div>
+          </div>
+          <div>
+            <div class="field"><label for="planTitle">Тема / идея</label><input id="planTitle" placeholder="Например: 5 аниме с неожиданной концовкой"></div>
+            <div class="field"><label for="planNotes">Заметки (необязательно)</label><textarea id="planNotes" style="min-height:80px" placeholder="Факты, ссылки, материалы, тезисы..."></textarea></div>
+          </div>
+        </div>
+        <div class="actions"><button class="primary" id="addPlanBtn">Добавить в план</button><button id="askAiPlanBtn">Попросить ИИ придумать идеи</button></div>
+        <h2 style="margin-top:22px">Пункты выбранной даты</h2><div id="planItems" class="history-list"><div class="empty">На эту дату пока ничего не запланировано.</div></div>
+      </div>
+    </section>
     <section class="view" id="assistantView">
       <div class="panel">
         <div class="subnav"><div><h2 style="margin:0 0 4px">ИИ-ассистент AniWatch</h2><span class="hint">Редактор, генератор идей и контент-стратег</span></div><span class="pill-note">Cloudflare Workers AI</span></div>
@@ -94,11 +116,14 @@
   </main>
   <script>
     const $=id=>document.getElementById(id);
-    const KEY='aniwatch-media-drafts-v1', SENT='aniwatch-media-sent-v1', HISTORY='aniwatch-media-history-v1', SNAPSHOTS='aniwatch-media-snapshots-v1';
+    const KEY='aniwatch-media-drafts-v1', SENT='aniwatch-media-sent-v1', HISTORY='aniwatch-media-history-v1', SNAPSHOTS='aniwatch-media-snapshots-v1', PLAN='aniwatch-media-plan-v1';
     let drafts=JSON.parse(localStorage.getItem(KEY)||'[]');
     let sent=Number(localStorage.getItem(SENT)||0), editing=null;
     let history=JSON.parse(localStorage.getItem(HISTORY)||'[]');
     let snapshots=JSON.parse(localStorage.getItem(SNAPSHOTS)||'[]');
+    let plans=JSON.parse(localStorage.getItem(PLAN)||'[]');
+    let planMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+    let selectedPlanDate=localDateKey(new Date());
     let postButtons=[];
     $('apiUrl').value=localStorage.getItem('awm-api')||'';
     $('apiUrl').addEventListener('change',()=>localStorage.setItem('awm-api',$('apiUrl').value.trim()));
@@ -190,6 +215,46 @@
       }catch(e){feedback(e.message||'Не удалось отправить публикацию.',true)}
       finally{$('publishBtn').disabled=false}
     };
+    function localDateKey(date){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return y+'-'+m+'-'+d}
+    function renderCalendar(){
+      $('calendarMonth').textContent=planMonth.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
+      const grid=$('calendarGrid');grid.replaceChildren();
+      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(day=>{const el=document.createElement('div');el.className='calendar-weekday';el.textContent=day;grid.append(el)});
+      const first=new Date(planMonth.getFullYear(),planMonth.getMonth(),1),offset=(first.getDay()+6)%7,days=new Date(planMonth.getFullYear(),planMonth.getMonth()+1,0).getDate();
+      for(let n=0;n<42;n++){
+        const day=n-offset+1,date=new Date(planMonth.getFullYear(),planMonth.getMonth(),day),key=localDateKey(date),inside=date.getMonth()===planMonth.getMonth();
+        const btn=document.createElement('button');btn.type='button';btn.className='calendar-day'+(inside?'':' muted')+(key===selectedPlanDate?' selected':'')+(key===localDateKey(new Date())?' today':'');
+        const number=document.createElement('span');number.textContent=String(date.getDate());
+        const count=plans.filter(p=>p.date===key).length;const meta=document.createElement('small');meta.textContent=count?count+' пункт.':'';
+        btn.append(number,meta);btn.onclick=()=>{selectedPlanDate=key;$('planDate').value=key;renderCalendar();renderPlanItems()};
+        grid.append(btn);
+      }
+    }
+    function renderPlanItems(){
+      const root=$('planItems');root.replaceChildren();
+      const items=plans.filter(p=>p.date===selectedPlanDate).sort((a,b)=>a.created.localeCompare(b.created));
+      if(!items.length){root.innerHTML='<div class="empty">На эту дату пока ничего не запланировано.</div>';return}
+      items.forEach(item=>{
+        const row=document.createElement('div');row.className='history-row';
+        const p=document.createElement('p');p.textContent=item.title;
+        const notes=document.createElement('small');notes.textContent=item.type+(item.notes?' · '+item.notes:'');
+        const meta=document.createElement('div');meta.className='plan-meta';meta.style.marginTop='10px';
+        const status=document.createElement('select');[['idea','Идея'],['draft','Черновик'],['ready','Готово']].forEach(pair=>{const opt=document.createElement('option');opt.value=pair[0];opt.textContent=pair[1];status.append(opt)});status.value=item.status;status.onchange=()=>{item.status=status.value;localStorage.setItem(PLAN,JSON.stringify(plans));renderCalendar()};
+        const edit=document.createElement('button');edit.type='button';edit.textContent='В редактор';edit.onclick=()=>{switchView('editor');$('postText').value=item.title+(item.notes?'\n\n'+item.notes:'');$('postText').dispatchEvent(new Event('input'))};
+        const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Удалить';del.onclick=()=>{plans=plans.filter(p=>p.id!==item.id);localStorage.setItem(PLAN,JSON.stringify(plans));renderCalendar();renderPlanItems()};
+        meta.append(status,edit,del);row.append(p,notes,meta);root.append(row);
+      });
+    }
+    $('planDate').value=selectedPlanDate;
+    $('planDate').addEventListener('change',()=>{selectedPlanDate=$('planDate').value||localDateKey(new Date());planMonth=new Date(selectedPlanDate+'T12:00:00');planMonth=new Date(planMonth.getFullYear(),planMonth.getMonth(),1);renderCalendar();renderPlanItems()});
+    $('monthPrev').onclick=()=>{planMonth=new Date(planMonth.getFullYear(),planMonth.getMonth()-1,1);renderCalendar()};
+    $('monthNext').onclick=()=>{planMonth=new Date(planMonth.getFullYear(),planMonth.getMonth()+1,1);renderCalendar()};
+    $('addPlanBtn').onclick=()=>{
+      const title=$('planTitle').value.trim();if(!title){$('planTitle').focus();return}
+      plans.push({id:crypto.randomUUID(),date:$('planDate').value||selectedPlanDate,type:$('planType').value,title,notes:$('planNotes').value.trim(),status:'idea',created:new Date().toISOString()});
+      localStorage.setItem(PLAN,JSON.stringify(plans));selectedPlanDate=$('planDate').value||selectedPlanDate;$('planTitle').value='';$('planNotes').value='';renderCalendar();renderPlanItems();
+    };
+    $('askAiPlanBtn').onclick=()=>{switchView('assistant');$('aiTask').value='ideas';$('aiPrompt').value='Предложи идеи публикаций для выбранной даты '+selectedPlanDate+' и разбей их по форматам.'};
     function switchView(name){
       document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
       document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===name)));
@@ -258,7 +323,7 @@
     $('insertAiBtn').addEventListener('click',()=>{const value=$('aiOutput').textContent.trim();if(!value)return;switchView('editor');$('postText').value=value;$('postText').dispatchEvent(new Event('input'));});
     $('copyAiBtn').addEventListener('click',async()=>{const value=$('aiOutput').textContent.trim();if(!value)return;try{await navigator.clipboard.writeText(value);$('aiStatus').textContent='Скопировано.'}catch{$('aiStatus').textContent='Браузер не разрешил доступ к буферу обмена.'}});
     $('saveAiBtn').addEventListener('click',()=>{const text=$('aiOutput').textContent.trim();if(!text)return;const d={id:crypto.randomUUID(),text,photo:'',video:'',buttons:[],updated:new Date().toISOString()};drafts.push(d);persist();$('aiStatus').textContent='Черновик сохранён.'});
-    renderHistory();renderAnalytics();render();
+    renderHistory();renderAnalytics();renderCalendar();renderPlanItems();render();
   </script>
 </body>
 </html>
