@@ -125,6 +125,7 @@
     let planMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
     let selectedPlanDate=localDateKey(new Date());
     let postButtons=[];
+    let importedPhotoData='';
     $('apiUrl').value=localStorage.getItem('awm-api')||'';
     $('apiUrl').addEventListener('change',()=>localStorage.setItem('awm-api',$('apiUrl').value.trim()));
     $('postText').addEventListener('input',()=>{ $('charCount').textContent=$('postText').value.length; updatePreview(); });
@@ -164,27 +165,30 @@
       const area=$('postText'),start=area.selectionStart,end=area.selectionEnd,selected=area.value.slice(start,end)||'текст';
       area.setRangeText('['+selected+'](https://)',start,end,'select');area.focus();area.dispatchEvent(new Event('input'));
     };
-    $('photoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('photoUrl').value?('Изображение: '+$('photoUrl').value):($('videoUrl').value?('Видео: '+$('videoUrl').value):'Не добавлено');});
+    $('photoUrl').addEventListener('input',()=>{if(importedPhotoData){$('photoPreview').textContent='Изображение прикреплено из ChatGPT';return;}$('photoPreview').textContent=$('photoUrl').value?('Изображение: '+$('photoUrl').value):($('videoUrl').value?('Видео: '+$('videoUrl').value):'Не добавлено');});
     $('videoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('videoUrl').value?'Видео: '+$('videoUrl').value:($('photoUrl').value||'Не добавлено');});
     function importChatDraftFromLink(){
       const raw=window.location.hash.startsWith('#draft=')?window.location.hash.slice(7):'';
       if(!raw)return;
       try{
-        if(raw.length>14000)throw new Error('Ссылка с черновиком слишком большая.');
+        if(raw.length>1450000)throw new Error('Ссылка с черновиком и изображением слишком большая.');
         const data=JSON.parse(decodeURIComponent(raw));
         if(!data||typeof data!=='object'||typeof data.text!=='string'||!data.text.trim())throw new Error('В ссылке нет текста публикации.');
         if(data.text.length>4096)throw new Error('Текст превышает лимит Telegram в 4096 символов.');
         const photo=typeof data.photo==='string'?data.photo:'';
+        const photoData=typeof data.photoData==='string'?data.photoData:'';
         const video=typeof data.video==='string'?data.video:'';
-        if(photo&&video)throw new Error('Нельзя одновременно импортировать фото и видео.');
+        if([photo,photoData,video].filter(Boolean).length>1)throw new Error('Можно импортировать только один источник медиа.');
+        if(photoData&&(!/^data:image\/(jpeg|png);base64,[A-Za-z0-9+/]+=*$/.test(photoData)||photoData.length>1400000))throw new Error('Изображение должно быть JPEG/PNG меньше 1 МБ.');
         for(const value of [photo,video])if(value){const u=new URL(value);if(!['https:','http:'].includes(u.protocol))throw new Error('Медиа должно быть доступно по HTTP/HTTPS.')}
         const buttons=Array.isArray(data.buttons)?data.buttons.slice(0,6).map(b=>({label:String(b.label||b.text||'').slice(0,64),url:String(b.url||'')})):[];
         for(const b of buttons){let u;try{u=new URL(b.url)}catch{throw new Error('Проверь подписи и ссылки кнопок в импортированном посте.')}if(!b.label||!['https:','http:'].includes(u.protocol))throw new Error('Проверь подписи и ссылки кнопок в импортированном посте.')}
         editing=null;postButtons=buttons;renderButtons();
+        importedPhotoData=photoData;
         $('postText').value=data.text;$('photoUrl').value=photo;$('videoUrl').value=video;
         $('postText').dispatchEvent(new Event('input'));$('photoUrl').dispatchEvent(new Event('input'));$('videoUrl').dispatchEvent(new Event('input'));
         switchView('editor');
-        feedback('Черновик из ChatGPT загружен. Проверь текст и изображение, затем нажми «Опубликовать сейчас».');
+        feedback(photoData?'Черновик и изображение загружены. Проверь предпросмотр и нажми «Опубликовать сейчас».':'Черновик из ChatGPT загружен. Проверь текст и изображение, затем нажми «Опубликовать сейчас».');
         window.history.replaceState(null,'',window.location.pathname+window.location.search);
       }catch(error){feedback('Не удалось импортировать черновик: '+(error.message||'неверная ссылка'),true)}
     }
@@ -198,7 +202,7 @@
       return data;
     }
     function persist(){localStorage.setItem(KEY,JSON.stringify(drafts));render()}
-    function clearForm(){editing=null;postButtons=[];renderButtons();$('postText').value='';$('photoUrl').value='';$('videoUrl').value='';$('charCount').textContent='0';updatePreview();$('photoPreview').textContent='Не добавлено';feedback('')}
+    function clearForm(){editing=null;postButtons=[];importedPhotoData='';renderButtons();$('postText').value='';$('photoUrl').value='';$('videoUrl').value='';$('charCount').textContent='0';updatePreview();$('photoPreview').textContent='Не добавлено';feedback('')}
     function render(){
       $('draftCount').textContent=drafts.length;$('readyCount').textContent=drafts.length;$('sentCount').textContent=sent;
       $('draftList').innerHTML='';
@@ -223,21 +227,21 @@
     $('reviewBtn').onclick=()=>saveCurrentDraft('review');
     $('clearBtn').onclick=clearForm;
     $('publishBtn').onclick=async()=>{
-      const rawText=$('postText').value.trim(),text=toTelegramHtml(rawText),photo=$('photoUrl').value.trim(),video=$('videoUrl').value.trim(),api=$('apiUrl').value.trim().replace(/\/$/,'');
+      const rawText=$('postText').value.trim(),text=toTelegramHtml(rawText),photo=$('photoUrl').value.trim(),video=$('videoUrl').value.trim(),photoData=importedPhotoData,api=$('apiUrl').value.trim().replace(/\/$/,'');
       const key=$('adminKey').value.trim();
       if(!rawText){feedback('Добавь текст публикации.',true);return}
-      if(photo&&video){feedback('Выбери изображение или видео — одновременно нельзя.',true);return}
+      if([photo,photoData,video].filter(Boolean).length>1){feedback('Выбери только один источник медиа.',true);return}
       const buttons=postButtons.filter(b=>b.label.trim()||b.url.trim()).map(b=>({text:b.label.trim(),url:b.url.trim()}));
       if(buttons.some(b=>!b.text||!/^https?:\/\//i.test(b.url))){feedback('У каждой кнопки должны быть текст и корректная HTTP/HTTPS-ссылка.',true);return}
       if(!api||!key){feedback('Укажи адрес Worker API и ключ доступа.',true);return}
       if(!confirm('Опубликовать эту запись в Telegram-канале @aniwatch_1?'))return;
       $('publishBtn').disabled=true;feedback('Отправляю публикацию...');
       try{
-        const res=await fetch(api+'/publish',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({text,photo,video,buttons})});
+        const res=await fetch(api+'/publish',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({text,photo,photoData,video,buttons})});
         const data=await res.json().catch(()=>({}));
         if(!res.ok)throw new Error(data.error||'Ошибка публикации: HTTP '+res.status);
         sent++;localStorage.setItem(SENT,String(sent));
-        history.push({id:data.message_id||crypto.randomUUID(),message_id:data.message_id||null,text:rawText,media:photo?'photo':video?'video':'text',publishedAt:new Date().toISOString()});
+        history.push({id:data.message_id||crypto.randomUUID(),message_id:data.message_id||null,text:rawText,media:(photo||photoData)?'photo':video?'video':'text',publishedAt:new Date().toISOString()});
         history=history.slice(-250);localStorage.setItem(HISTORY,JSON.stringify(history));
         if(editing){drafts=drafts.filter(x=>x.id!==editing);persist()}
         render();renderHistory();clearForm();feedback('Опубликовано. Telegram message_id: '+(data.message_id??'получен'));
