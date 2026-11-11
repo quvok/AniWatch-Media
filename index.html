@@ -46,7 +46,7 @@
         <div class="field"><label>Кнопки под публикацией</label><div id="buttonList"></div><button type="button" id="addButton" style="margin-top:7px">+ Добавить кнопку-ссылку</button><span class="hint">До 6 кнопок, каждая ведёт на HTTP/HTTPS-ссылку.</span></div>
         <div class="field"><label for="photoUrl">Ссылка на изображение (необязательно)</label><input id="photoUrl" type="url" placeholder="https://..."><span class="hint">Изображение должно быть общедоступно по прямой HTTPS-ссылке.</span></div>
         <div class="field"><label for="videoUrl">Ссылка на видео (необязательно)</label><input id="videoUrl" type="url" placeholder="https://..."><span class="hint">Прямая HTTPS-ссылка на видео. Нельзя использовать одновременно с изображением.</span></div>
-        <div class="actions"><button id="saveBtn">Сохранить черновик</button><button class="primary" id="publishBtn">Опубликовать сейчас</button><button id="clearBtn">Очистить</button></div>
+        <div class="actions"><button id="saveBtn">Сохранить черновик</button><button id="reviewBtn">На согласование</button><button class="primary" id="publishBtn">Опубликовать сейчас</button><button id="clearBtn">Очистить</button></div>
         <p id="feedback" class="hint" role="status" aria-live="polite"></p>
       </section>
       <aside class="panel">
@@ -184,14 +184,21 @@
       drafts.slice().reverse().forEach(d=>{
         const item=document.createElement('div');item.className='item';
         const p=document.createElement('p');p.textContent=d.text;
-        const small=document.createElement('small');small.textContent=new Date(d.updated).toLocaleString('ru-RU')+(d.photo?' · изображение':d.video?' · видео':'');
+        const small=document.createElement('small');small.textContent=new Date(d.updated).toLocaleString('ru-RU')+(d.photo?' · изображение':d.video?' · видео':'')+(d.status==='review'?' · На согласовании':' · Черновик');
         const actions=document.createElement('div');actions.className='item-actions';
         const edit=document.createElement('button');edit.textContent='Изменить';edit.onclick=()=>{editing=d.id;postButtons=Array.isArray(d.buttons)?d.buttons.map(x=>({...x})):[];renderButtons();$('postText').value=d.text;$('photoUrl').value=d.photo||'';$('videoUrl').value=d.video||'';$('postText').dispatchEvent(new Event('input'));$('photoUrl').dispatchEvent(new Event('input'));window.scrollTo({top:0,behavior:'smooth'})};
         const del=document.createElement('button');del.className='danger';del.textContent='Удалить';del.onclick=()=>{drafts=drafts.filter(x=>x.id!==d.id);persist()};
         actions.append(edit,del);item.append(p,small,actions);$('draftList').append(item);
       });
     }
-    $('saveBtn').onclick=()=>{const text=$('postText').value.trim();if(!text){feedback('Добавь текст публикации.',true);return}const d={id:editing||crypto.randomUUID(),text,photo:$('photoUrl').value.trim(),video:$('videoUrl').value.trim(),buttons:postButtons,updated:new Date().toISOString()};const i=drafts.findIndex(x=>x.id===d.id);if(i>=0)drafts[i]=d;else drafts.push(d);persist();clearForm();feedback('Черновик сохранён в этом браузере.')};
+    function saveCurrentDraft(status){
+      const text=$('postText').value.trim();if(!text){feedback('Добавь текст публикации.',true);return}
+      const d={id:editing||crypto.randomUUID(),text,photo:$('photoUrl').value.trim(),video:$('videoUrl').value.trim(),buttons:postButtons.map(x=>({...x})),status,updated:new Date().toISOString()};
+      const i=drafts.findIndex(x=>x.id===d.id);if(i>=0)drafts[i]=d;else drafts.push(d);
+      persist();clearForm();feedback(status==='review'?'Отмечено «На согласование» (локальная отметка).':'Черновик сохранён в этом браузере.');
+    }
+    $('saveBtn').onclick=()=>saveCurrentDraft('draft');
+    $('reviewBtn').onclick=()=>saveCurrentDraft('review');
     $('clearBtn').onclick=clearForm;
     $('publishBtn').onclick=async()=>{
       const rawText=$('postText').value.trim(),text=toTelegramHtml(rawText),photo=$('photoUrl').value.trim(),video=$('videoUrl').value.trim(),api=$('apiUrl').value.trim().replace(/\/$/,'');
