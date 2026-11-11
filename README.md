@@ -7,7 +7,7 @@ A private editorial dashboard for the public Telegram channel `@aniwatch_1`.
 - Telegram post editor with bold, italic, strikethrough, monospace and links.
 - Text, public HTTPS image and public HTTPS video publishing.
 - Up to 6 inline URL buttons and Telegram preview.
-- Browser-local drafts with edit/delete.
+- Browser-local drafts with edit/delete and a local “На согласование” status (not a multi-user approval workflow).
 - Local editorial calendar with idea, draft and ready states (not a publishing scheduler).
 - Manual publication only, with confirmation before every send.
 - Local publication history and JSON export.
