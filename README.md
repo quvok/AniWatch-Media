@@ -8,6 +8,7 @@ A private editorial dashboard for the public Telegram channel `@aniwatch_1`.
 - Text, public HTTPS image and public HTTPS video publishing.
 - Up to 6 inline URL buttons and Telegram preview.
 - Browser-local drafts with edit/delete.
+- Local editorial calendar with idea, draft and ready states (not a publishing scheduler).
 - Manual publication only, with confirmation before every send.
 - Local publication history and JSON export.
 - Channel subscriber count via Telegram Bot API, with browser-local historical snapshots.
@@ -22,7 +23,7 @@ A private editorial dashboard for the public Telegram channel `@aniwatch_1`.
 - Cloudflare Worker in `worker/worker.js` holds Telegram credentials and serves the authenticated API.
 - Telegram Bot API publishes text, photos and videos.
 - Cloudflare Workers AI powers the assistant through an `AI` binding. No OpenAI API key is used.
-- Browser localStorage stores drafts, publication history and subscriber snapshots.
+- Browser localStorage stores drafts, editorial plan, publication history and subscriber snapshots.
 
 ## 1. Configure the Telegram bot
 
@@ -85,7 +86,7 @@ All endpoints except `/health` require `Authorization: Bearer ADMIN_KEY`. CORS i
 2. Enter the `ADMIN_KEY` in **Ключ доступа панели**. It is kept in the current tab's session memory.
 3. Use **Редактор** to compose and publish posts. Image and video are mutually exclusive.
 4. Use **Аналитика → Обновить статистику** to fetch the current subscriber count. Take periodic snapshots from the same browser to build a trend.
-5. Use **ИИ-ассистент** to generate posts, ideas, rewrites or a weekly content plan. Provide source facts when factual accuracy matters.
+5. Use **Контент-план** to organize ideas by date and status without scheduling Telegram sends. Use **ИИ-ассистент** to generate posts, ideas, rewrites or a weekly content plan. Provide source facts when factual accuracy matters.
 
 Every Telegram send remains a manual action with a browser confirmation. The assistant never publishes directly.
 
@@ -100,7 +101,7 @@ It cannot reliably show per-post views, reactions, shares, reach or channel-wide
 
 ## Local data and privacy
 
-- Drafts, history and subscriber snapshots are stored in this browser's localStorage.
+- Drafts, editorial plan, history and subscriber snapshots are stored in this browser's localStorage.
 - Use **Экспортировать историю и замеры** to back up analytics as JSON.
 - Clearing browser storage removes local data.
 - The Worker does not store drafts or analytics history.
