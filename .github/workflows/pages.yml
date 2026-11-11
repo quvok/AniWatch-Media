@@ -3,6 +3,8 @@ name: Deploy AniWatch Media to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +17,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check Worker module syntax
+        run: node --input-type=module --check < worker/worker.js
+      - name: Check dashboard JavaScript and required features
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const html = fs.readFileSync('index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+          if (!scripts.length) throw new Error('No inline dashboard script found');
+          for (const match of scripts) new Function(match[1]);
+          const worker = fs.readFileSync('worker/worker.js', 'utf8');
+          for (const feature of ['"/publish"', '"/analytics"', '"/ai"', 'sendVideo']) {
+            if (!worker.includes(feature)) throw new Error('Missing Worker feature: ' + feature);
+          }
+          if (/scheduled_posts|Cron Trigger|\/schedule/.test(worker + html)) {
+            throw new Error('Scheduled publishing must remain disabled');
+          }
+          console.log('Dashboard syntax and feature checks passed');
+          NODE
+
   deploy:
+    needs: validate
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
