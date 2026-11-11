@@ -8,7 +8,6 @@ A small static editorial dashboard for the public Telegram channel `@aniwatch_1`
 - Post editor with bold, italic, strikethrough, monospace and link formatting.
 - Optional public HTTPS image URL.
 - Up to 6 inline URL buttons under a post.
-- Up to 6 inline URL buttons under a post.
 - Manual publish to Telegram after a browser confirmation.
 - Publish history counter stored locally in the current browser.
 - Cloudflare Worker acts as a private bridge to Telegram Bot API.
@@ -63,7 +62,7 @@ If you use a custom domain for Pages, set `ALLOWED_ORIGIN` to that exact origin 
 
 1. Enter the Worker URL in **Адрес Worker API**.
 2. Enter the `ADMIN_KEY` in **Ключ доступа панели**.
-3. Write a post. Use the formatting toolbar or syntax `**bold**`, `__italic__`, `~~strike~~`, `` `code` ``, `[link](https://example.com)`; optionally add an HTTPS image and up to 6 link buttons.
+3. Write a post. With an image, Telegram limits the caption to 1024 characters. Use the formatting toolbar or syntax `**bold**`, `__italic__`, `~~strike~~`, `` `code` ``, `[link](https://example.com)`; optionally add an HTTPS image and up to 6 link buttons.
 4. Click **Опубликовать в Telegram** and confirm the browser prompt.
 
 The access key is kept in the current tab's session memory only. The Worker checks it before contacting Telegram. Drafts are stored locally in the browser.
