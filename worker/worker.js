@@ -21,10 +21,12 @@ function validatePost(payload) {
   const text = typeof payload.text === "string" ? payload.text.trim() : "";
   const photo = typeof payload.photo === "string" ? payload.photo.trim() : "";
   const video = typeof payload.video === "string" ? payload.video.trim() : "";
+  const photoData = typeof payload.photoData === "string" ? payload.photoData : "";
   const buttons = Array.isArray(payload.buttons) ? payload.buttons : [];
   if (!text) throw new Error("Post text is required");
   if (text.length > 4096) throw new Error("Telegram text limit is 4096 characters");
-  if (photo && video) throw new Error("Use either a photo or a video, not both");
+  if ([photo, photoData, video].filter(Boolean).length > 1) throw new Error("Use only one media source");
+  if (photoData && (!/^data:image\/(jpeg|png);base64,[A-Za-z0-9+/]+=*$/.test(photoData) || photoData.length > 1400000)) throw new Error("Inline image must be a JPEG or PNG smaller than 1 MB");
   if (buttons.length > 6) throw new Error("No more than 6 inline buttons are allowed");
   for (const button of buttons) {
     if (!button || typeof button.text !== "string" || !button.text.trim() || button.text.length > 64 || typeof button.url !== "string") {
@@ -46,7 +48,7 @@ function validatePost(payload) {
     }
   }
   if ((photo || video) && text.length > 1024) throw new Error("Media caption must not exceed 1024 characters");
-  return { text, photo, video, buttons };
+  return { text, photo, photoData, video, buttons };
 }
 
 async function telegramRequest(env, method, payload) {
@@ -61,23 +63,38 @@ async function telegramRequest(env, method, payload) {
 }
 
 async function sendTelegram(env, post) {
-  const { text, photo, video, buttons = [] } = post;
-  const method = photo ? "sendPhoto" : video ? "sendVideo" : "sendMessage";
+  const { text, photo, photoData, video, buttons = [] } = post;
+  const method = (photo || photoData) ? "sendPhoto" : video ? "sendVideo" : "sendMessage";
   const replyMarkup = buttons.length
     ? { inline_keyboard: buttons.map(button => [{ text: button.text, url: button.url }]) }
     : undefined;
-  const body = photo
-    ? { chat_id: env.TELEGRAM_CHANNEL_ID, photo, caption: text, parse_mode: "HTML", ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }
-    : video
-      ? { chat_id: env.TELEGRAM_CHANNEL_ID, video, caption: text, parse_mode: "HTML", supports_streaming: true, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }
-      : { chat_id: env.TELEGRAM_CHANNEL_ID, text, parse_mode: "HTML", disable_web_page_preview: false, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) };
+  const body = photoData
+    ? (() => {
+        const encoded = photoData.split(",", 2)[1];
+        const mime = photoData.startsWith("data:image/png") ? "image/png" : "image/jpeg";
+        const binary = atob(encoded);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const form = new FormData();
+        form.set("chat_id", env.TELEGRAM_CHANNEL_ID);
+        form.set("photo", new Blob([bytes], { type: mime }), mime === "image/png" ? "image.png" : "image.jpg");
+        form.set("caption", text);
+        form.set("parse_mode", "HTML");
+        if (replyMarkup) form.set("reply_markup", JSON.stringify(replyMarkup));
+        return form;
+      })()
+    : photo
+      ? { chat_id: env.TELEGRAM_CHANNEL_ID, photo, caption: text, parse_mode: "HTML", ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }
+      : video
+        ? { chat_id: env.TELEGRAM_CHANNEL_ID, video, caption: text, parse_mode: "HTML", supports_streaming: true, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }
+        : { chat_id: env.TELEGRAM_CHANNEL_ID, text, parse_mode: "HTML", disable_web_page_preview: false, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) };
 
   const result = await telegramRequest(env, method, body);
   return {
     message_id: result.message_id,
     chat_id: result.chat?.id,
     date: result.date,
-    media_type: photo ? "photo" : video ? "video" : "text"
+    media_type: (photo || photoData) ? "photo" : video ? "video" : "text"
   };
 }
 
@@ -178,7 +195,7 @@ export default {
     let payload;
     try {
       const raw = await request.text();
-      if (raw.length > 12000) return json({ error: "Request is too large" }, 413, responseOrigin);
+      if (raw.length > 1500000) return json({ error: "Request is too large (maximum 1.5 MB)" }, 413, responseOrigin);
       payload = JSON.parse(raw);
     } catch {
       return json({ error: "Invalid JSON" }, 400, responseOrigin);
