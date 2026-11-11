@@ -47,7 +47,7 @@ function validatePost(payload) {
       throw new Error("Media URL must be a valid HTTPS URL");
     }
   }
-  if ((photo || video) && text.length > 1024) throw new Error("Media caption must not exceed 1024 characters");
+  if ((photo || photoData || video) && text.length > 1024) throw new Error("Media caption must not exceed 1024 characters");
   return { text, photo, photoData, video, buttons };
 }
 
