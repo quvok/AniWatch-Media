@@ -8,6 +8,7 @@ A small static editorial dashboard for the public Telegram channel `@aniwatch_1`
 - Post editor with bold, italic, strikethrough, monospace and link formatting.
 - Optional public HTTPS image URL.
 - Up to 6 inline URL buttons under a post.
+- Up to 6 inline URL buttons under a post.
 - Manual publish to Telegram after a browser confirmation.
 - Publish history counter stored locally in the current browser.
 - Cloudflare Worker acts as a private bridge to Telegram Bot API.
