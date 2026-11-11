@@ -139,7 +139,7 @@
       const area=$('postText'),start=area.selectionStart,end=area.selectionEnd,selected=area.value.slice(start,end)||'текст';
       area.setRangeText('['+selected+'](https://)',start,end,'select');area.focus();area.dispatchEvent(new Event('input'));
     };
-    $('photoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('photoUrl').value||'Не добавлено';});
+    $('photoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('photoUrl').value?('Изображение: '+$('photoUrl').value):($('videoUrl').value?('Видео: '+$('videoUrl').value):'Не добавлено');});
     $('videoUrl').addEventListener('input',()=>{$('photoPreview').textContent=$('videoUrl').value?'Видео: '+$('videoUrl').value:($('photoUrl').value||'Не добавлено');});
     function feedback(msg,error=false){$('feedback').textContent=msg;$('feedback').className=error?'hint error':'hint'}
     async function apiRequest(path,options={}) {
@@ -159,7 +159,7 @@
       drafts.slice().reverse().forEach(d=>{
         const item=document.createElement('div');item.className='item';
         const p=document.createElement('p');p.textContent=d.text;
-        const small=document.createElement('small');small.textContent=new Date(d.updated).toLocaleString('ru-RU')+(d.photo?' · изображение':'');
+        const small=document.createElement('small');small.textContent=new Date(d.updated).toLocaleString('ru-RU')+(d.photo?' · изображение':d.video?' · видео':'');
         const actions=document.createElement('div');actions.className='item-actions';
         const edit=document.createElement('button');edit.textContent='Изменить';edit.onclick=()=>{editing=d.id;postButtons=Array.isArray(d.buttons)?d.buttons.map(x=>({...x})):[];renderButtons();$('postText').value=d.text;$('photoUrl').value=d.photo||'';$('videoUrl').value=d.video||'';$('postText').dispatchEvent(new Event('input'));$('photoUrl').dispatchEvent(new Event('input'));window.scrollTo({top:0,behavior:'smooth'})};
         const del=document.createElement('button');del.className='danger';del.textContent='Удалить';del.onclick=()=>{drafts=drafts.filter(x=>x.id!==d.id);persist()};
