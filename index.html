@@ -179,7 +179,7 @@
         if(photo&&video)throw new Error('Нельзя одновременно импортировать фото и видео.');
         for(const value of [photo,video])if(value){const u=new URL(value);if(!['https:','http:'].includes(u.protocol))throw new Error('Медиа должно быть доступно по HTTP/HTTPS.')}
         const buttons=Array.isArray(data.buttons)?data.buttons.slice(0,6).map(b=>({label:String(b.label||b.text||'').slice(0,64),url:String(b.url||'')})):[];
-        for(const b of buttons){if(!b.label||!/^https?:\\/\\//i.test(b.url))throw new Error('Проверь подписи и ссылки кнопок в импортированном посте.')}
+        for(const b of buttons){let u;try{u=new URL(b.url)}catch{throw new Error('Проверь подписи и ссылки кнопок в импортированном посте.')}if(!b.label||!['https:','http:'].includes(u.protocol))throw new Error('Проверь подписи и ссылки кнопок в импортированном посте.')}
         editing=null;postButtons=buttons;renderButtons();
         $('postText').value=data.text;$('photoUrl').value=photo;$('videoUrl').value=video;
         $('postText').dispatchEvent(new Event('input'));$('photoUrl').dispatchEvent(new Event('input'));$('videoUrl').dispatchEvent(new Event('input'));
