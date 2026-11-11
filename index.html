@@ -64,7 +64,10 @@
     function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
     function toTelegramHtml(source){
       let out=escapeHtml(source);
-      out=out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,(_,label,url)=>'<a href="'+url+'">'+label+'</a>');
+      out=out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,(_,label,url)=>{
+        try { const parsed=new URL(url); if(parsed.protocol!=='https:'&&parsed.protocol!=='http:')return label; const safe=parsed.href.replace(/&/g,'&amp;').replace(/"/g,'&quot;'); return '<a href="'+safe+'">'+label+'</a>'; }
+        catch { return label; }
+      });
       out=out.replace(/\*\*(.+?)\*\*/gs,'<b>$1</b>').replace(/__(.+?)__/gs,'<i>$1</i>').replace(/~~(.+?)~~/gs,'<s>$1</s>').replace(/`([^`]+)`/g,'<code>$1</code>');
       return out;
     }
@@ -99,7 +102,7 @@
     function localDateTimeValue(date){const pad=n=>String(n).padStart(2,'0');return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes())}
     const minSchedule=new Date(Date.now()+2*60000);$('scheduledAt').min=localDateTimeValue(minSchedule);$('scheduledAt').value=localDateTimeValue(new Date(Date.now()+60*60000));
     async function apiRequest(path,options={}) {
-      const api=$('apiUrl').value.trim().replace(/\\/$/,'');const key=$('adminKey').value.trim();
+      const api=$('apiUrl').value.trim().replace(/\/$/,'');const key=$('adminKey').value.trim();
       if(!api||!key)throw new Error('Сначала укажи Worker API и ADMIN_KEY.');
       const response=await fetch(api+path,{...options,headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,...(options.headers||{})}});
       const data=await response.json().catch(()=>({}));
