@@ -25,7 +25,7 @@ jobs:
       - name: Check Worker module syntax
         run: node --input-type=module --check < worker/worker.js
       - name: Check Shorts renderer syntax
-        run: python3 -m py_compile shorts/render.py
+        run: python3 -m py_compile shorts/render.py shorts/generate_assets.py
       - name: Check dashboard JavaScript and required features
         run: |
           node --input-type=module <<'NODE'
